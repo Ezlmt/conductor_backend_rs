@@ -1,10 +1,14 @@
 use std::net::SocketAddr;
 use sqlx::postgres::PgPoolOptions;
 use tracing::info;
+use state::AppState;
 
 mod app;
 mod config;
-
+mod state;
+mod models;
+mod handlers;
+mod routes;
 
 #[tokio::main]
 async fn main() {
@@ -28,7 +32,8 @@ async fn main() {
     info!("Database connected successfully");
 
     // construct app
-    let app = app::create_app(pool);
+    let state = AppState{ db: pool};
+    let app = app::create_app(state);
 
     // set the port
     let addr = SocketAddr::from(([0, 0, 0, 0], 9916));
