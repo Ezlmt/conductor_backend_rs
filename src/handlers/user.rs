@@ -26,6 +26,6 @@ pub async fn register_user(
     .await
     .map_err(|e| format!("db error: {}", e))?;
 
-    info!("Regist successfully! User: {}", user.name);
+    info!(email = %payload.email, "register user");
     Ok(Json(user))
 }
