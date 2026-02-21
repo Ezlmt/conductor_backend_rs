@@ -1,4 +1,5 @@
 use axum::{extract::State, Json};
+use bcrypt::{hash, DEFAULT_COST};
 use sqlx::query_as;
 use tracing::info;
 
@@ -11,6 +12,8 @@ pub async fn register_user(
     State(state): State<AppState>,
     Json(payload): Json<RegisterRequest>,
 ) -> Result<Json<User>, String> {
+    let hashed_password = hash(&payload.password, DEFAULT_COST)
+        .map_err(|e| format!("hash error: {}", e))?;
     let user = query_as!(
         User,
         r#"
@@ -19,7 +22,7 @@ pub async fn register_user(
         RETURNING id, email, name
         "#,
         payload.email,
-        payload.password,
+        hashed_password,
         payload.name
     )
     .fetch_one(&state.db)
