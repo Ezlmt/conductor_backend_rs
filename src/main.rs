@@ -32,7 +32,12 @@ async fn main() {
     info!("Database connected successfully");
 
     // construct app
-    let state = AppState{ db: pool};
+    let jwt_secret = 
+        std::env::var("jwt_secret").expect("JWT_SECRET must be set");
+    let state = AppState{
+        db: pool,
+        jwt_secret,
+    };
     let app = app::create_app(state);
 
     // set the port
