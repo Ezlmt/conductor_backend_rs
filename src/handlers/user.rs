@@ -77,3 +77,18 @@ pub async fn login_user(
 
     Ok(Json(LoginResponse { token}))
 }
+
+#[cfg(test)]
+mod tests {
+    use bcrypt::{hash, verify, DEFAULT_COST};
+
+    #[test]
+    fn password_hash_and_verify_works() {
+        let password = "123456";
+
+        let hashed = hash(password, DEFAULT_COST).unwrap();
+
+        assert!(verify(password, &hashed).unwrap());
+        assert!(!verify("wrong", &hashed).unwrap());
+    }
+}
